@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. Tentar ler a Chave dos Secrets
+# 1. Configuração de Segurança (Secrets)
 try:
     API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
@@ -11,48 +11,44 @@ except Exception as e:
 
 st.title("🩺 Simulador de Enfermagem")
 
-# 2. Testar conexão e definir modelo
-# Em 2026, o nome padrão é gemini-2.0-flash ou gemini-1.5-flash para estabilidade
-MODELO = "gemini-1.5-flash" 
-
+# 2. Inicialização do Modelo e Chat
 if "chat" not in st.session_state:
     try:
-       # 2. Testar conexão e definir modelo com nomes universais
-MODELO_NOME = "models/gemini-1.5-flash" # Prefixo 'models/' é obrigatório em certas versões
-
-if "chat" not in st.session_state:
-    try:
-        # Tenta inicializar com o nome completo
-        model = genai.GenerativeModel(MODELO_NOME)
+        # Tentamos o nome mais compatível para evitar o erro 'NotFound'
+        model = genai.GenerativeModel("gemini-1.5-flash")
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Professor Online")
     except Exception as e:
-        # Se falhar, tenta o nome curto
-        try:
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            st.session_state.chat = model.start_chat(history=[])
-            st.sidebar.success("✅ Professor Online (v2)")
-        except:
-            st.sidebar.error(f"Erro de Conexão: {e}")
+        st.sidebar.error(f"Falha na conexão: {e}")
 
-# 3. Interface Simples
-st.sidebar.header("Cenários")
+# 3. Interface da Barra Lateral
+st.sidebar.header("Cenários Clínicos")
 opcoes = {
-    "Sr. Alberto (EAM)": "Inicie cenário: Sr. Alberto, Pós-EAM, Glicémia 265.",
-    "Sr. Alberto (Jejum)": "Inicie cenário: Sr. Alberto, Jejum, Glicémia 135.",
-    "D. Maria (Visão)": "Inicie cenário: D. Maria, Baixa visão, Glicémia 310."
+    "📍 Sr. Alberto (EAM)": "Inicie o cenário: Sr. Alberto, Pós-EAM, Glicémia 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS.",
+    "🏥 Sr. Alberto (Jejum)": "Inicie o cenário: Sr. Alberto, Jejum para Cateterismo, Glicémia 135 mg/dL.",
+    "👵 D. Maria (Visão)": "Inicie o cenário: D. Maria, 70 anos, baixa visão, glicémia 310 mg/dL."
 }
 
 for nome, comando in opcoes.items():
     if st.sidebar.button(nome):
-        response = st.session_state.chat.send_message(comando)
-        st.session_state.last_response = response.text
+        try:
+            response = st.session_state.chat.send_message(comando)
+            st.session_state.last_response = response.text
+        except Exception as e:
+            st.error(f"Erro ao enviar mensagem: {e}")
 
+# 4. Exibição das Respostas
 if "last_response" in st.session_state:
+    st.markdown("---")
     st.markdown(st.session_state.last_response)
 
-# Caixa de texto livre
-prompt = st.chat_input("Escreva a sua decisão clínica...")
+# 5. Caixa de Chat Livre
+st.markdown("---")
+prompt = st.chat_input("Escreva a sua decisão de enfermagem...")
 if prompt:
-    res = st.session_state.chat.send_message(prompt)
-    st.markdown(res.text)
+    try:
+        res = st.session_state.chat.send_message(prompt)
+        st.session_state.last_response = res.text
+        st.rerun() # Atualiza a página para mostrar a resposta
+    except Exception as e:
+        st.error(f"Erro no chat: {e}")
