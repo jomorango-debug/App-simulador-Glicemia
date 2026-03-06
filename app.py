@@ -13,7 +13,8 @@ st.title("🩺 Simulador de Enfermagem v3")
 # 2. Inicialização do Chat (Forçando o modelo estável)
 if "chat" not in st.session_state:
     try:
-        # Este é o modelo 'Pro' original, o mais estável para APIs gratuitas
+        # Este nome (gemini-pro) é um "alias" que a Google redireciona 
+        # automaticamente para a versão estável mais recente disponível.
         model = genai.GenerativeModel("gemini-pro")
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Sistema Online")
