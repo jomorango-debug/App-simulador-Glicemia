@@ -22,7 +22,7 @@ Usa Português de Portugal.
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash-exp", # Esta é a versão que ativa as capacidades do Flash 3
+    model_name="gemini-3-flash", # Nome oficial para 2026
     generation_config=generation_config,
     system_instruction=system_instruction,
 )
