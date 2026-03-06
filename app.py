@@ -15,7 +15,7 @@ st.title("🩺 Simulador de Enfermagem")
 if "chat" not in st.session_state:
     try:
         # Usamos gemini-1.5-flash-latest por ser o mais estável na API v1
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Professor Conectado")
     except Exception as e:
