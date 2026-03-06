@@ -22,7 +22,7 @@ Usa Português de Portugal.
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-3-flash", # Nome oficial para 2026
+    model_name="gemini-3.0-flash", # Nome oficial para 2026
     generation_config=generation_config,
     system_instruction=system_instruction,
 )
