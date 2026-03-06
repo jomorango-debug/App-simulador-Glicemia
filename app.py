@@ -15,11 +15,10 @@ st.title("🩺 Simulador de Enfermagem")
 if "chat" not in st.session_state:
     try:
         # Tentamos o nome mais compatível para evitar o erro 'NotFound'
-        model = genai.GenerativeModel("gemini-1.5-flash")
+       # Tentativa com o nome estável de 2026
+        model = genai.GenerativeModel("gemini-2.0-flash") 
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Professor Online")
-    except Exception as e:
-        st.sidebar.error(f"Falha na conexão: {e}")
 
 # 3. Interface da Barra Lateral
 st.sidebar.header("Cenários Clínicos")
