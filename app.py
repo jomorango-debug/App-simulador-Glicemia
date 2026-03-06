@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. Configuração de Segurança (Secrets)
+# 1. Configuração de Segurança
 try:
     API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
@@ -11,43 +11,46 @@ except Exception as e:
 
 st.title("🩺 Simulador de Enfermagem")
 
-# 2. Inicialização do Modelo e Chat
+# 2. Inicialização do Modelo (Ajustado para 2026)
 if "chat" not in st.session_state:
     try:
-        # Tentamos o nome mais compatível para evitar o erro 'NotFound'
-       # Tentativa com o nome estável de 2026
-        model = genai.GenerativeModel("gemini-2.0-flash") 
+        # Usando o modelo mais estável para evitar o erro 404
+        model = genai.GenerativeModel("gemini-1.5-flash")
         st.session_state.chat = model.start_chat(history=[])
-        st.sidebar.success("✅ Professor Online")
+    except Exception as e:
+        st.error(f"Falha ao iniciar motor de IA: {e}")
 
 # 3. Interface da Barra Lateral
 st.sidebar.header("Cenários Clínicos")
-opcoes = {
-    "📍 Sr. Alberto (EAM)": "Inicie o cenário: Sr. Alberto, Pós-EAM, Glicémia 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS.",
+
+# Definimos os comandos para os botões
+cenarios = {
+    "📍 Sr. Alberto (EAM)": "Inicie o cenário: Sr. Alberto, Pós-EAM, Glicémia 265 mg/dL. NPH 18UI e Aspart SOS.",
     "🏥 Sr. Alberto (Jejum)": "Inicie o cenário: Sr. Alberto, Jejum para Cateterismo, Glicémia 135 mg/dL.",
     "👵 D. Maria (Visão)": "Inicie o cenário: D. Maria, 70 anos, baixa visão, glicémia 310 mg/dL."
 }
 
-for nome, comando in opcoes.items():
+for nome, comando in cenarios.items():
     if st.sidebar.button(nome):
         try:
             response = st.session_state.chat.send_message(comando)
             st.session_state.last_response = response.text
         except Exception as e:
-            st.error(f"Erro ao enviar mensagem: {e}")
+            st.error(f"Erro ao carregar cenário: {e}")
 
-# 4. Exibição das Respostas
+# 4. Exibição da Resposta do Professor
 if "last_response" in st.session_state:
     st.markdown("---")
+    st.info("💡 **Orientação do Professor:**")
     st.markdown(st.session_state.last_response)
 
-# 5. Caixa de Chat Livre
+# 5. Interação Livre
 st.markdown("---")
-prompt = st.chat_input("Escreva a sua decisão de enfermagem...")
+prompt = st.chat_input("Descreva a sua intervenção de enfermagem aqui...")
 if prompt:
     try:
         res = st.session_state.chat.send_message(prompt)
         st.session_state.last_response = res.text
-        st.rerun() # Atualiza a página para mostrar a resposta
+        st.rerun()
     except Exception as e:
-        st.error(f"Erro no chat: {e}")
+        st.error(f"Erro na resposta: {e}")
