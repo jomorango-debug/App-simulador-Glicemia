@@ -17,11 +17,23 @@ MODELO = "gemini-1.5-flash"
 
 if "chat" not in st.session_state:
     try:
-        model = genai.GenerativeModel(MODELO)
+       # 2. Testar conexão e definir modelo com nomes universais
+MODELO_NOME = "models/gemini-1.5-flash" # Prefixo 'models/' é obrigatório em certas versões
+
+if "chat" not in st.session_state:
+    try:
+        # Tenta inicializar com o nome completo
+        model = genai.GenerativeModel(MODELO_NOME)
         st.session_state.chat = model.start_chat(history=[])
-        st.sidebar.success(f"Ligado ao modelo: {MODELO}")
+        st.sidebar.success("✅ Professor Online")
     except Exception as e:
-        st.sidebar.error(f"Falha ao ligar à Google: {e}")
+        # Se falhar, tenta o nome curto
+        try:
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            st.session_state.chat = model.start_chat(history=[])
+            st.sidebar.success("✅ Professor Online (v2)")
+        except:
+            st.sidebar.error(f"Erro de Conexão: {e}")
 
 # 3. Interface Simples
 st.sidebar.header("Cenários")
