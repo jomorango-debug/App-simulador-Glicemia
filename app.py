@@ -13,8 +13,8 @@ st.title("🩺 Simulador de Enfermagem v3")
 # 2. Inicialização do Chat (Forçando o modelo estável)
 if "chat" not in st.session_state:
     try:
-        # Em 2026, 'gemini-2.0-flash' é o nome universal para o motor Flash
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # Este é o modelo 'Pro' original, o mais estável para APIs gratuitas
+        model = genai.GenerativeModel("gemini-1.0-pro")
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Sistema Online")
     except Exception as e:
