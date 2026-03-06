@@ -14,7 +14,7 @@ st.title("🩺 Simulador de Enfermagem v3")
 if "chat" not in st.session_state:
     try:
         # Em 2026, 'gemini-1.5-flash' no SDK v0.8.3+ já aponta para v1 automaticamente
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-pro")
         st.session_state.chat = model.start_chat(history=[])
         st.sidebar.success("✅ Professor Online")
     except Exception as e:
