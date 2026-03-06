@@ -17,8 +17,8 @@ if "chat" not in st.session_state:
         # Usando o modelo mais estável para evitar o erro 404
         model = genai.GenerativeModel("gemini-1.5-flash")
         st.session_state.chat = model.start_chat(history=[])
-    except Exception as e:
-        st.error(f"Falha ao iniciar motor de IA: {e}")
+        # Em 2026, este é o nome estável que substitui as versões v1beta
+        model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 # 3. Interface da Barra Lateral
 st.sidebar.header("Cenários Clínicos")
