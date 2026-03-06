@@ -1,76 +1,46 @@
 import streamlit as st
 import google.generativeai as genai
-from fpdf import FPDF
-from datetime import datetime
 
-# --- 1. CONFIGURAÇÃO DE SEGURANÇA ---
+# 1. Tentar ler a Chave dos Secrets
 try:
     API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
-except Exception:
-    st.error("⚠️ Configuração Necessária: A API Key não foi encontrada nos Secrets do Streamlit.")
+except Exception as e:
+    st.error(f"Erro nos Secrets: {e}")
     st.stop()
 
-# --- 2. CONFIGURAÇÃO DO MODELO ---
-# Tenta encontrar o modelo disponível automaticamente
-available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-# Escolhemos o Gemini 3 Flash da lista ou um padrão se falhar
-target_model = next((m for m in available_models if "gemini-3" in m), "gemini-1.5-flash")
+st.title("🩺 Simulador de Enfermagem")
 
-st.sidebar.info(f"Modelo em uso: {target_model}") # Isto ajuda-nos a ver o que está a acontecer
+# 2. Testar conexão e definir modelo
+# Em 2026, o nome padrão é gemini-2.0-flash ou gemini-1.5-flash para estabilidade
+MODELO = "gemini-1.5-flash" 
 
-model = genai.GenerativeModel(
-    model_name=target_model,
-    generation_config={"temperature": 0.7, "top_p": 0.95, "max_output_tokens": 2048},
-    system_instruction="Tu és um Professor de Enfermagem (2º ano). Usa Português de Portugal."
-)
+if "chat" not in st.session_state:
+    try:
+        model = genai.GenerativeModel(MODELO)
+        st.session_state.chat = model.start_chat(history=[])
+        st.sidebar.success(f"Ligado ao modelo: {MODELO}")
+    except Exception as e:
+        st.sidebar.error(f"Falha ao ligar à Google: {e}")
 
-# --- 3. FUNÇÃO PDF ---
-def generate_pdf(history):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(200, 10, "Relatorio de Simulacao Clinica - Enfermagem", ln=True, align="C")
-    pdf.ln(10)
-    for message in history:
-        role = "ALUNO" if message.role == "user" else "PROFESSOR"
-        pdf.set_font("Arial", "B", 11)
-        pdf.cell(0, 10, f"{role}:", ln=True)
-        pdf.set_font("Arial", "", 11)
-        clean_text = message.parts[0].text.encode('latin-1', 'ignore').decode('latin-1')
-        pdf.multi_cell(0, 8, clean_text)
-        pdf.ln(2)
-    return pdf.output(dest='S').encode('latin-1')
+# 3. Interface Simples
+st.sidebar.header("Cenários")
+opcoes = {
+    "Sr. Alberto (EAM)": "Inicie cenário: Sr. Alberto, Pós-EAM, Glicémia 265.",
+    "Sr. Alberto (Jejum)": "Inicie cenário: Sr. Alberto, Jejum, Glicémia 135.",
+    "D. Maria (Visão)": "Inicie cenário: D. Maria, Baixa visão, Glicémia 310."
+}
 
-# --- 4. INTERFACE ---
-st.set_page_config(page_title="Simulador Enfermagem", page_icon="🩺", layout="wide")
+for nome, comando in opcoes.items():
+    if st.sidebar.button(nome):
+        response = st.session_state.chat.send_message(comando)
+        st.session_state.last_response = response.text
 
-if "chat_session" not in st.session_state:
-    st.session_state.chat_session = model.start_chat(history=[])
+if "last_response" in st.session_state:
+    st.markdown(st.session_state.last_response)
 
-with st.sidebar:
-    st.header("Cenários")
-    if st.button("📍 Sr. Alberto (EAM)"):
-        st.session_state.prompt_input = "Inicie: Sr. Alberto, Pós-EAM. Glicémia: 265 mg/dL. NPH 18UI e Aspart SOS."
-    if st.button("🏥 Sr. Alberto (Jejum)"):
-        st.session_state.prompt_input = "Inicie: Sr. Alberto, Jejum (NPO). Glicémia: 135 mg/dL."
-    if st.button("👵 D. Maria (Visão)"):
-        st.session_state.prompt_input = "Inicie: D. Maria, baixa visão. Glicémia: 310 mg/dL."
-    
-    if len(st.session_state.chat_session.history) > 0:
-        pdf_data = generate_pdf(st.session_state.chat_session.history)
-        st.download_button("📥 Baixar Relatório PDF", pdf_data, "relatorio.pdf", "application/pdf")
-
-for message in st.session_state.chat_session.history:
-    with st.chat_message("user" if message.role == "user" else "assistant"):
-        st.markdown(message.parts[0].text)
-
-user_input = st.chat_input("Sua decisão...")
-if "prompt_input" in st.session_state:
-    user_input = st.session_state.prompt_input
-    del st.session_state.prompt_input
-
-if user_input:
-    with st.chat_message("user"): st.markdown(user_input)
-    response = st.session_state.chat_session.send_message(user_input)
-    with st.chat_message("assistant"): st.markdown(response.text)
+# Caixa de texto livre
+prompt = st.chat_input("Escreva a sua decisão clínica...")
+if prompt:
+    res = st.session_state.chat.send_message(prompt)
+    st.markdown(res.text)
