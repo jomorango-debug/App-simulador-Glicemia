@@ -12,19 +12,17 @@ except Exception:
     st.stop()
 
 # --- 2. CONFIGURAÇÃO DO MODELO ---
-generation_config = {"temperature": 0.7, "top_p": 0.95, "max_output_tokens": 2048}
-system_instruction = """
-Tu és um Professor de Enfermagem (2º ano). O teu tom é clínico e pedagógico.
-REGRAS: 1. Rápida = Abdómen. 2. Lenta/NPH = Coxas/Nádegas. 
-3. Jejum: Se mantiver NPH total, simula hipoglicémia. 
-4. Baixa Visão: Exige 'Técnica dos Cliques'.
-Usa Português de Portugal.
-"""
+# Tenta encontrar o modelo disponível automaticamente
+available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+# Escolhemos o Gemini 3 Flash da lista ou um padrão se falhar
+target_model = next((m for m in available_models if "gemini-3" in m), "gemini-1.5-flash")
+
+st.sidebar.info(f"Modelo em uso: {target_model}") # Isto ajuda-nos a ver o que está a acontecer
 
 model = genai.GenerativeModel(
-    model_name="gemini-3.0-flash", # Nome oficial para 2026
-    generation_config=generation_config,
-    system_instruction=system_instruction,
+    model_name=target_model,
+    generation_config={"temperature": 0.7, "top_p": 0.95, "max_output_tokens": 2048},
+    system_instruction="Tu és um Professor de Enfermagem (2º ano). Usa Português de Portugal."
 )
 
 # --- 3. FUNÇÃO PDF ---
