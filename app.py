@@ -17,13 +17,11 @@ if "chat_session" not in st.session_state:
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             system_instruction=(
-                "Tu és um Professor de Enfermagem especialista em Diabetes. "
-                "O teu objetivo é avaliar as decisões clínicas dos alunos de 2º ano em Portugal. "
-                "Sê rigoroso mas pedagógico. Usa Português de Portugal. "
-                "Foca-te na segurança do doente, farmacocinética das insulinas e técnica correta."
+                "Tu és um Professor de Enfermagem especialista em Diabetes em Portugal. "
+                "Avalia decisões de alunos de 2º ano. Sê rigoroso e pedagógico. "
+                "Usa Português de Portugal. Foca na segurança e farmacocinética."
             )
         )
-        # Inicializa a sessão com histórico vazio corretamente formatado
         st.session_state.chat_session = model.start_chat(history=[])
         st.sidebar.success("✅ Professor Online")
     except Exception as e:
@@ -34,17 +32,39 @@ st.title("🩺 Simulador de Decisão Clínica: Insulinoterapia")
 st.markdown("---")
 
 st.sidebar.header("Cenários Clínicos")
-st.sidebar.markdown("Selecione um caso para iniciar:")
+st.sidebar.markdown("Selecione um caso:")
 
-# Dicionário de cenários com aspas triplas para segurança de sintaxe
+# Definindo cenários de forma linear para evitar erros de aspas triplas
 cenarios = {
-    "📍 Sr. Alberto (Pós-EAM)": """Cenário: Sr. Alberto, 65 anos, admitido após Enfarte. 
-    Glicémia atual: 265 mg/dL. Prescrição: Insulina NPH 18UI (SC) + Insulina Aspart SOS. 
-    Apresenta-te como professor e pede ao aluno para decidir a conduta imediata.""",
-    
-    "🏥 Sr. Alberto (Jejum)": """Cenário: Sr. Alberto tem cateterismo marcado para as 10h e está em jejum. 
-    Glicémia: 135 mg/dL. Ele questiona se deve administrar a NPH da manhã. 
-    Pede ao aluno para justificar a decisão de administrar ou suspender.""",
-    
-    "👵 D. Maria (Baixa Visão)": """Cenário: D. Maria, 70 anos, vive sozinha e tem baixa visão grave. 
-    Glicémia:
+    "📍 Sr. Alberto (Pós-EAM)": "Cenário: Sr. Alberto, 65 anos, admitido após Enfarte. Glicémia: 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS. Peça ao aluno para decidir a conduta.",
+    "🏥 Sr. Alberto (Jejum)": "Cenário: Sr. Alberto em jejum para cateterismo. Glicémia: 135 mg/dL. Deve administrar a NPH da manhã? Peça justificativa.",
+    "👵 D. Maria (Visão)": "Cenário: D. Maria, 70 anos, baixa visão grave. Glicémia: 310 mg/dL. Como orientar a preparação segura da dose? Avalie a técnica dos cliques."
+}
+
+# Botões na barra lateral
+for nome, prompt_cenario in cenarios.items():
+    if st.sidebar.button(nome, use_container_width=True):
+        try:
+            response = st.session_state.chat_session.send_message(prompt_cenario)
+            st.session_state.historico = response.text
+        except Exception as e:
+            st.error("Limite de quota atingido ou erro. Aguarde 60 segundos.")
+
+# --- 4. ÁREA DE DIÁLOGO ---
+if "historico" in st.session_state:
+    with st.container():
+        st.info("### 👨‍🏫 Orientação do Professor")
+        st.markdown(st.session_state.historico)
+
+st.markdown("---")
+
+user_input = st.chat_input("Escreva aqui a sua decisão ou resposta...")
+
+if user_input:
+    if "chat_session" in st.session_state:
+        try:
+            response = st.session_state.chat_session.send_message(user_input)
+            st.session_state.historico = response.text
+            st.rerun()
+        except Exception as e:
+            st.error("Erro na comunicação. Tente novamente em 1 minuto.")
