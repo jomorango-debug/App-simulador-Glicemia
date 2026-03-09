@@ -15,7 +15,7 @@ else:
 if "chat_session" not in st.session_state:
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-1.5-pro",
             system_instruction=(
                 "Tu és um Professor de Enfermagem especialista em Diabetes em Portugal. "
                 "Avalia decisões de alunos de 2º ano. Sê rigoroso e pedagógico. "
