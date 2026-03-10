@@ -16,7 +16,7 @@ if "chat_session" not in st.session_state:
     try:
         # Tente mudar para "gemini-1.5-pro" se o flash continuar a dar erro de quota
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash", 
+            model_name="gemini-1.5-pro", 
             system_instruction=(
                 "Tu és um Professor de Enfermagem em Portugal. "
                 "Avalia decisões de alunos de 2º ano sobre insulina. "
