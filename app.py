@@ -1,55 +1,55 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. Configuração Básica
-st.set_page_config(page_title="Simulador Enfermagem", layout="wide")
+# 1. Configuração de Página (Deve ser a primeira linha de Streamlit)
+st.set_page_config(page_title="Simulador Enfermagem", layout="centered")
 
-# 2. Barra Lateral para a Chave
-with st.sidebar:
-    st.title("Configuração")
-    api_key = st.text_input("Insere a tua Google API Key:", type="password")
-    st.info("Obtém a chave em: aistudio.google.com")
-
-# 3. Inicialização do Modelo (Só corre se houver chave)
-if api_key:
-    try:
-        genai.configure(api_key=api_key)
-        # Usamos o Flash que é mais rápido e evita que a app fique 'a pensar'
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        
-        if "chat" not in st.session_state:
-            st.session_state.chat = model.start_chat(history=[])
-            # Mensagem de sistema enviada silenciosamente para definir o papel do bot
-            st.session_state.chat.send_message("Age como um Professor de Enfermagem em Portugal. Avalia as decisões dos alunos de forma rigorosa e pedagógica.")
-        
-        st.sidebar.success("✅ Professor Online")
-    except Exception as e:
-        st.sidebar.error(f"Erro de ligação: {e}")
-
-# 4. Interface Principal
 st.title("🩺 Simulador de Insulinoterapia")
 
-# Cenários Rápidos
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("📍 Caso: Sr. Alberto (Glicémia 265)"):
-        st.session_state.prompt = "Cenário: Sr. Alberto, 65 anos, Pós-EAM. Glicémia: 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS. O que fazes?"
-with col2:
-    if st.button("🏥 Caso: Jejum para Cateterismo"):
-        st.session_state.prompt = "Cenário: Doente em jejum, glicémia 135 mg/dL. Deve administrar a NPH?"
+# 2. Área de Configuração na Sidebar
+with st.sidebar:
+    st.header("Configuração")
+    api_key = st.text_input("Insira a sua Google API Key:", type="password")
+    st.markdown("[Obter chave aqui](https://aistudio.google.com/)")
 
-# Processar o envio da mensagem
-if "prompt" in st.session_state:
-    try:
-        response = st.session_state.chat.send_message(st.session_state.prompt)
-        st.markdown("### 👨‍🏫 Feedback do Professor:")
-        st.write(response.text)
-        del st.session_state.prompt # Limpa para o próximo clique
-    except Exception as e:
-        st.error("A IA demorou muito a responder. Tenta novamente.")
+# 3. Lógica Principal
+if not api_key:
+    st.warning("⚠️ Por favor, insira a sua API Key na barra lateral para começar.")
+    st.stop() # Isto para o loop aqui até haver uma chave
 
-# Chat livre
-user_input = st.chat_input("Responde ao professor...")
-if user_input and api_key:
-    response = st.session_state.chat.send_message(user_input)
-    st.markdown(f"**Professor:** {response.text}")
+try:
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    # Inicializar chat se não existir
+    if "chat" not in st.session_state:
+        st.session_state.chat = model.start_chat(history=[])
+        st.sidebar.success("✅ Professor Online")
+
+    # Botões de Cenário
+    st.subheader("Selecione um Cenário Clínico")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("📍 Sr. Alberto (Glicémia 265)"):
+            response = st.session_state.chat.send_message("Cenário: Sr. Alberto, 65 anos, Pós-EAM. Glicémia: 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS. Comece a simulação.")
+            st.session_state.resposta = response.text
+            
+    with col2:
+        if st.button("🏥 Jejum para Cateterismo"):
+            response = st.session_state.chat.send_message("Cenário: Doente em jejum, glicémia 135 mg/dL. Deve administrar a NPH? Comece a simulação.")
+            st.session_state.resposta = response.text
+
+    # Exibição do Diálogo
+    if "resposta" in st.session_state:
+        st.info(st.session_state.resposta)
+
+    # Chat de interação
+    user_input = st.chat_input("Responda ao professor...")
+    if user_input:
+        response = st.session_state.chat.send_message(user_input)
+        st.session_state.resposta = response.text
+        st.rerun()
+
+except Exception as e:
+    st.error(f"Erro de Conexão: {e}")
