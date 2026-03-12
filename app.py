@@ -1,11 +1,10 @@
 import streamlit as st
 import google.generativeai as genai
-import os
 
-# 1. Configuração de Página
+# 1. Configuração de Página (Sempre a primeira linha)
 st.set_page_config(page_title="Simulador Enfermagem", layout="centered")
 
-# 2. Barra Lateral: Chave API
+# 2. Barra Lateral: Configuração da Chave
 with st.sidebar:
     st.header("🔑 Acesso ao Professor")
     api_key = st.text_input("Introduza a sua Google API Key:", type="password")
@@ -14,27 +13,25 @@ with st.sidebar:
 # 3. Bloqueio de Segurança
 if not api_key:
     st.title("🩺 Simulador de Insulinoterapia")
-    st.warning("⚠️ O simulador aguarda a sua API Key na barra lateral.")
+    st.warning("⚠️ Insira a sua API Key na barra lateral para ativar o simulador.")
     st.stop()
 
-# 4. Configuração da IA (Ajuste para evitar erro 404/v1beta)
+# 4. Configuração da IA (Ajuste para Produção v1)
 try:
-    # Forçamos a configuração a ignorar versões beta internamente
-    os.environ["GOOGLE_API_KEY"] = api_key
     genai.configure(api_key=api_key)
     
-    # Em 2026, usamos o modelo estável sem prefixos de versão no código
+    # Em 2026, usamos o modelo sem especificar v1beta no código
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     if "chat" not in st.session_state:
-        # Criamos o chat e enviamos a instrução de sistema
         st.session_state.chat = model.start_chat(history=[])
+        # Instrução de sistema inicial
         st.session_state.chat.send_message("Age como um Professor de Enfermagem em Portugal. Sê rigoroso e pedagógico.")
     
-    st.sidebar.success("✅ Professor Conectado (v1)")
+    st.sidebar.success("✅ Professor Conectado (v1 Stable)")
 except Exception as e:
     st.error(f"Erro de Conexão: {e}")
-    st.info("Dica: Tente criar uma NOVA chave API no Google AI Studio num projeto novo.")
+    st.info("Dica: Se o erro 404 persistir, crie uma NOVA chave API no Google AI Studio.")
     st.stop()
 
 # 5. Interface e Cenários
@@ -62,7 +59,7 @@ if "last_res" in st.session_state:
     st.markdown("---")
     st.info(st.session_state.last_res)
 
-# Interação
+# Interação (Chat Input)
 aluno_input = st.chat_input("Responda ao professor...")
 if aluno_input:
     try:
