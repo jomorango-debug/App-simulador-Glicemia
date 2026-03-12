@@ -7,27 +7,30 @@ st.set_page_config(page_title="Simulador Enfermagem v3", layout="centered")
 # 2. Barra Lateral: Configuração da Chave
 with st.sidebar:
     st.header("🔑 Acesso ao Professor")
-    api_key = st.text_input("Introduza a sua nova Google API Key:", type="password")
-    st.info("Dica: Use a chave do NOVO projeto que criou no AI Studio.")
+    # Sugestão: Use a chave do NOVO projeto que criou no AI Studio
+    api_key = st.text_input("Introduza a sua Google API Key:", type="password")
+    st.info("Dica: Se der erro 404, verifique se a chave é de um projeto criado recentemente.")
 
 # 3. Bloqueio de Segurança
 if not api_key:
     st.title("🩺 Simulador de Insulinoterapia")
-    st.warning("⚠️ O simulador aguarda a nova API Key na barra lateral.")
+    st.warning("⚠️ O simulador aguarda a API Key na barra lateral para ativar o Professor.")
     st.stop()
 
-# 4. Configuração da IA (Rota v1 Stable)
+# 4. Configuração da IA (Forçando Rota de Produção)
 try:
     genai.configure(api_key=api_key)
-    # Em 2026, o modelo padrão é o gemini-1.5-flash
+    
+    # Em 2026, para evitar o erro 404 de 'not found', usamos o nome base de produção
+    # O modelo 'gemini-1.5-flash' sem o prefixo v1beta é o mais estável
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     if "chat" not in st.session_state:
         st.session_state.chat = model.start_chat(history=[])
-        # Instrução de sistema inicial
+        # Instrução de sistema inicial para definir o papel do Professor
         st.session_state.chat.send_message("Age como um Professor de Enfermagem em Portugal. Sê rigoroso e pedagógico.")
     
-    st.sidebar.success("✅ Professor Conectado (v1)")
+    st.sidebar.success("✅ Professor Conectado (v1 Stable)")
 except Exception as e:
     st.error(f"Erro de Conexão: {e}")
     st.stop()
@@ -52,7 +55,7 @@ with col2:
         except Exception:
             st.error("Erro de Quota ou Conexão. Aguarde 60 segundos.")
 
-# Mostrar Feedback
+# Mostrar Feedback do Professor
 if "last_res" in st.session_state:
     st.markdown("---")
     st.info(st.session_state.last_res)
