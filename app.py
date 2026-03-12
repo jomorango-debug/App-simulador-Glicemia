@@ -1,74 +1,55 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(page_title="Simulador de Enfermagem v2", page_icon="🩺", layout="wide")
+# 1. Configuração Básica
+st.set_page_config(page_title="Simulador Enfermagem", layout="wide")
 
-# --- 2. BARRA LATERAL: CONFIGURAÇÃO ---
+# 2. Barra Lateral para a Chave
 with st.sidebar:
-    st.header("🔑 Configuração")
-    
-    api_key_input = st.text_input(
-        "Introduza a sua Google API Key:", 
-        type="password", 
-        placeholder="AIzaSy...",
-        help="A chave é apagada ao fechar o navegador."
-    )
+    st.title("Configuração")
+    api_key = st.text_input("Insere a tua Google API Key:", type="password")
+    st.info("Obtém a chave em: aistudio.google.com")
 
-    if api_key_input:
-        try:
-            # Configuração forçada para evitar erros de versão
-            genai.configure(api_key=api_key_input)
-            st.success("✅ Sistema Pronto")
-        except Exception as e:
-            st.error(f"Erro: {e}")
-
-# --- 3. MOTOR DE IA (VERSÃO PRO) ---
-if "chat_session" not in st.session_state:
-    st.session_state.chat_session = None
-
-if api_key_input and st.session_state.chat_session is None:
+# 3. Inicialização do Modelo (Só corre se houver chave)
+if api_key:
     try:
-        # Mudamos para o 1.5-pro, que é mais robusto para diagnósticos
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
-            system_instruction="És um Professor de Enfermagem em Portugal. Avalia as decisões dos alunos sobre insulina com rigor pedagógico."
-        )
-        st.session_state.chat_session = model.start_chat(history=[])
+        genai.configure(api_key=api_key)
+        # Usamos o Flash que é mais rápido e evita que a app fique 'a pensar'
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        if "chat" not in st.session_state:
+            st.session_state.chat = model.start_chat(history=[])
+            # Mensagem de sistema enviada silenciosamente para definir o papel do bot
+            st.session_state.chat.send_message("Age como um Professor de Enfermagem em Portugal. Avalia as decisões dos alunos de forma rigorosa e pedagógica.")
+        
+        st.sidebar.success("✅ Professor Online")
     except Exception as e:
-        st.error("Erro ao carregar o Professor. Tente uma nova chave API.")
+        st.sidebar.error(f"Erro de ligação: {e}")
 
-# --- 4. INTERFACE E CENÁRIOS ---
-st.title("🩺 Simulador de Decisão Clínica")
+# 4. Interface Principal
+st.title("🩺 Simulador de Insulinoterapia")
 
-cenarios = {
-    "📍 Sr. Alberto (Pós-EAM)": "Cenário: Sr. Alberto, 65 anos, Pós-EAM. Glicémia: 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS. O que faz?",
-    "🏥 Sr. Alberto (Jejum)": "Cenário: Sr. Alberto em jejum para cateterismo. Glicémia: 135 mg/dL. Deve administrar a NPH?",
-    "👵 D. Maria (Visão)": "Cenário: D. Maria, baixa visão. Glicémia: 310 mg/dL. Como orientar a preparação segura?"
-}
+# Cenários Rápidos
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("📍 Caso: Sr. Alberto (Glicémia 265)"):
+        st.session_state.prompt = "Cenário: Sr. Alberto, 65 anos, Pós-EAM. Glicémia: 265 mg/dL. Prescrição: NPH 18UI e Aspart SOS. O que fazes?"
+with col2:
+    if st.button("🏥 Caso: Jejum para Cateterismo"):
+        st.session_state.prompt = "Cenário: Doente em jejum, glicémia 135 mg/dL. Deve administrar a NPH?"
 
-col1, col2, col3 = st.columns(3)
-for i, (nome, prompt) in enumerate(cenarios.items()):
-    with [col1, col2, col3][i]:
-        if st.button(nome, use_container_width=True):
-            if st.session_state.chat_session:
-                try:
-                    res = st.session_state.chat_session.send_message(prompt)
-                    st.session_state.historico = res.text
-                except Exception:
-                    st.error("Sem quota. Tente novamente em 60 segundos.")
-            else:
-                st.warning("Insira a chave na barra lateral.")
-
-# --- 5. EXIBIÇÃO ---
-if "historico" in st.session_state:
-    st.info(st.session_state.historico)
-
-user_input = st.chat_input("Sua decisão...")
-if user_input and st.session_state.chat_session:
+# Processar o envio da mensagem
+if "prompt" in st.session_state:
     try:
-        res = st.session_state.chat_session.send_message(user_input)
-        st.session_state.historico = res.text
-        st.rerun()
-    except:
-        st.error("Erro de quota.")
+        response = st.session_state.chat.send_message(st.session_state.prompt)
+        st.markdown("### 👨‍🏫 Feedback do Professor:")
+        st.write(response.text)
+        del st.session_state.prompt # Limpa para o próximo clique
+    except Exception as e:
+        st.error("A IA demorou muito a responder. Tenta novamente.")
+
+# Chat livre
+user_input = st.chat_input("Responde ao professor...")
+if user_input and api_key:
+    response = st.session_state.chat.send_message(user_input)
+    st.markdown(f"**Professor:** {response.text}")
