@@ -1,1 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Decisão Clínica: Insulinoterapia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f3f4f6;
+      color: #1f2937;
+    }
 
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    .subtexto {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .grelha-cenarios {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    .estado {
+      color: #4b5563;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+      color: #065f46;
+      margin-top: 12px;
+    }
+
+    .erro {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .cenario-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 14px;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🩺 Simulador de Decisão Clínica: Insulinoterapia</h1>
+      <p class="subtexto">
+        Escolha um cenário clínico, introduza a sua decisão e receba feedback imediato.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Cenários clínicos</h2>
+      <div class="grelha-cenarios">
+        {% for key, c in cenarios.items() %}
+          <button onclick="selecionarCenario('{{ key }}', `{{ c['texto']|replace('`', '\\`') }}`)">
+            {{ c["titulo"] }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Cenário selecionado</h2>
+      <div id="cenarioTexto" class="cenario-box subtexto">
+        Selecione um cenário para começar.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>A sua resposta</h2>
+      <textarea id="resposta" placeholder="Escreva aqui a sua decisão clínica..."></textarea>
+      <br><br>
+      <button onclick="avaliarResposta()">Avaliar resposta</button>
+      <p id="estado" class="estado"></p>
+    </div>
+
+    <div class="card hidden" id="resultadoCard">
+      <h2>Feedback do professor</h2>
+      <pre id="feedback"></pre>
+      <div id="score" class="score"></div>
+    </div>
+
+    <div class="card hidden" id="erroCard">
+      <p id="erroMsg" class="erro"></p>
+    </div>
+  </div>
+
+  <script>
+    let cenarioAtual = null;
+
+    function selecionarCenario(id, texto) {
+      cenarioAtual = id;
+      document.getElementById("cenarioTexto").textContent = texto;
+      document.getElementById("resultadoCard").classList.add("hidden");
+      document.getElementById("erroCard").classList.add("hidden");
+      document.getElementById("estado").textContent = "Cenário selecionado com sucesso.";
+    }
+
+    async function avaliarResposta() {
+      const resposta = document.getElementById("resposta").value.trim();
+      const estado = document.getElementById("estado");
+      const erroCard = document.getElementById("erroCard");
+      const erroMsg = document.getElementById("erroMsg");
+      const resultadoCard = document.getElementById("resultadoCard");
+      const feedback = document.getElementById("feedback");
+      const score = document.getElementById("score");
+
+      erroCard.classList.add("hidden");
+      resultadoCard.classList.add("hidden");
+
+      if (!cenarioAtual) {
+        erroMsg.textContent = "Tem de selecionar primeiro um cenário.";
+        erroCard.classList.remove("hidden");
+        return;
+      }
+
+      if (!resposta) {
+        erroMsg.textContent = "Tem de escrever uma resposta antes de a avaliar.";
+        erroCard.classList.remove("hidden");
+        return;
+      }
+
+      estado.textContent = "A avaliar a resposta...";
+
+      try {
+        const res = await fetch("/avaliar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            cenario_id: cenarioAtual,
+            resposta: resposta
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.erro || "Ocorreu um erro inesperado.");
+        }
+
+        feedback.textContent = data.feedback || "";
+        score.textContent = data.score ? `Pontuação identificada: ${data.score}/10` : "";
+        resultadoCard.classList.remove("hidden");
+        estado.textContent = "Avaliação concluída.";
+      } catch (err) {
+        erroMsg.textContent = err.message;
+        erroCard.classList.remove("hidden");
+        estado.textContent = "Não foi possível concluir a avaliação.";
+      }
+    }
+  </script>
+</body>
+</html>
