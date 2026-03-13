@@ -13,20 +13,20 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 30px auto;
       padding: 20px;
     }
 
     .card {
       background: #ffffff;
-      border-radius: 14px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 22px;
       margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     }
 
-    h1, h2 {
+    h1, h2, h3 {
       margin-top: 0;
     }
 
@@ -35,56 +35,145 @@
       line-height: 1.5;
     }
 
-    .grelha-cenarios {
+    .grelha-cenarios,
+    .grelha-opcoes {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
     }
 
-    button {
-      background: #2563eb;
-      color: white;
+    .cenario-btn,
+    .opcao-btn,
+    .acao-btn {
       border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
+      border-radius: 12px;
+      padding: 14px 16px;
       cursor: pointer;
       font-size: 15px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    .cenario-btn {
+      background: #2563eb;
+      color: white;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 180px;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-      box-sizing: border-box;
-      resize: vertical;
+    .cenario-btn:hover,
+    .opcao-btn:hover,
+    .acao-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
     }
 
-    .estado {
-      color: #4b5563;
-      margin-top: 12px;
+    .opcao-btn {
+      background: #eef2ff;
+      color: #1e3a8a;
+      border: 1px solid #c7d2fe;
+      text-align: left;
+      min-height: 92px;
+    }
+
+    .opcao-btn.correto {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .opcao-btn.parcial {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+    }
+
+    .opcao-btn.errado {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .acao-btn {
+      background: #111827;
+      color: white;
+    }
+
+    .acao-btn.secundario {
+      background: #6b7280;
+    }
+
+    .topo-jogo {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .info-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .valor-grande {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .score {
+      color: #065f46;
+    }
+
+    .etapa {
+      color: #7c3aed;
+    }
+
+    .cenario-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      line-height: 1.6;
+      min-height: 90px;
+    }
+
+    .feedback-box {
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    .feedback-correto {
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .feedback-parcial {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+    }
+
+    .feedback-errado {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
     }
 
     .hidden {
       display: none;
     }
 
-    .score {
-      font-size: 20px;
-      font-weight: bold;
-      color: #065f46;
-      margin-top: 12px;
-    }
-
-    .erro {
-      color: #b91c1c;
-      font-weight: bold;
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      box-sizing: border-box;
+      resize: vertical;
     }
 
     pre {
@@ -95,13 +184,30 @@
       margin: 0;
     }
 
-    .cenario-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 14px;
-      min-height: 80px;
-      line-height: 1.5;
+    .erro {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .mini {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 900px) {
+      .topo-jogo {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -110,40 +216,72 @@
     <div class="card">
       <h1>🩺 Simulador de Decisão Clínica: Insulinoterapia</h1>
       <p class="subtexto">
-        Escolha um cenário clínico, introduza a sua decisão e receba feedback imediato.
+        Escolha um cenário, tome decisões clínicas por etapas e acompanhe a sua pontuação em tempo real.
       </p>
     </div>
 
     <div class="card">
-      <h2>Cenários clínicos</h2>
+      <h2>Escolha um cenário clínico</h2>
       <div class="grelha-cenarios">
-        {% for key, c in cenarios.items() %}
-          <button onclick="selecionarCenario('{{ key }}', `{{ c['texto']|replace('`', '\\`') }}`)">
-            {{ c["titulo"] }}
-          </button>
-        {% endfor %}
+        <button class="cenario-btn" onclick="selecionarCenario('pos_eam')">Sr. Alberto (Pós-EAM)</button>
+        <button class="cenario-btn" onclick="selecionarCenario('jejum')">Sr. Alberto (Jejum)</button>
+        <button class="cenario-btn" onclick="selecionarCenario('baixa_visao')">D. Maria (Baixa visão)</button>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Cenário selecionado</h2>
-      <div id="cenarioTexto" class="cenario-box subtexto">
-        Selecione um cenário para começar.
+    <div class="card hidden" id="jogoCard">
+      <div class="topo-jogo">
+        <div class="info-box">
+          <div class="mini">Cenário atual</div>
+          <div id="tituloCenario" class="valor-grande" style="font-size:22px;">-</div>
+          <div id="estadoCenario" class="badge">Pronto para iniciar</div>
+        </div>
+
+        <div class="info-box">
+          <div class="mini">Pontuação atual</div>
+          <div id="scoreAtual" class="valor-grande score">0</div>
+        </div>
+
+        <div class="info-box">
+          <div class="mini">Etapa</div>
+          <div id="etapaAtual" class="valor-grande etapa">1/2</div>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>A sua resposta</h2>
-      <textarea id="resposta" placeholder="Escreva aqui a sua decisão clínica..."></textarea>
+    <div class="card hidden" id="cenarioCard">
+      <h2>Informação clínica</h2>
+      <div id="cenarioTexto" class="cenario-box"></div>
+    </div>
+
+    <div class="card hidden" id="perguntaCard">
+      <h2 id="perguntaTitulo">Decisão clínica</h2>
+      <p id="perguntaTexto" class="subtexto"></p>
+      <div id="opcoesContainer" class="grelha-opcoes"></div>
+
+      <div id="feedbackCurto" class="feedback-box hidden"></div>
+
+      <div style="margin-top:16px;">
+        <button class="acao-btn hidden" id="btnProximaEtapa" onclick="proximaEtapa()">Próxima etapa</button>
+        <button class="acao-btn secundario hidden" id="btnTerminar" onclick="mostrarReflexaoFinal()">Terminar caso</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="reflexaoCard">
+      <h2>Reflexão final</h2>
+      <p class="subtexto">
+        Agora que concluiu as decisões principais, justifique brevemente o seu raciocínio clínico.
+      </p>
+      <textarea id="respostaFinal" placeholder="Explique sucintamente a sua decisão..."></textarea>
       <br><br>
-      <button onclick="avaliarResposta()">Avaliar resposta</button>
-      <p id="estado" class="estado"></p>
+      <button class="acao-btn" onclick="avaliarRespostaFinal()">Obter feedback do professor</button>
+      <p id="estadoFinal" class="subtexto"></p>
     </div>
 
     <div class="card hidden" id="resultadoCard">
       <h2>Feedback do professor</h2>
-      <pre id="feedback"></pre>
-      <div id="score" class="score"></div>
+      <pre id="feedbackProfessor"></pre>
+      <div id="scoreProfessor" class="valor-grande score" style="font-size:22px; margin-top:14px;"></div>
     </div>
 
     <div class="card hidden" id="erroCard">
@@ -152,41 +290,333 @@
   </div>
 
   <script>
-    let cenarioAtual = null;
+    const cenarios = {
+      pos_eam: {
+        titulo: "Sr. Alberto (Pós-EAM)",
+        texto: "Sr. Alberto, 65 anos, admitido após enfarte agudo do miocárdio. Glicemia capilar: 265 mg/dL. Prescrição: NPH 18 UI e Aspart SOS. O que faz em primeiro lugar?",
+        etapas: [
+          {
+            titulo: "Etapa 1: Prioridade inicial",
+            pergunta: "Qual é a decisão inicial mais adequada perante este contexto clínico?",
+            opcoes: [
+              {
+                texto: "Administrar imediatamente ambas as insulinas sem nova verificação.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Isto introduz risco, porque não demonstra validação clínica suficiente nem confirmação da situação imediata da pessoa."
+              },
+              {
+                texto: "Avaliar a pessoa, confirmar prescrição/protocolo e interpretar o contexto antes de decidir a administração.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. A primeira decisão deve integrar segurança, leitura do contexto clínico e confirmação da prescrição ou protocolo aplicável."
+              },
+              {
+                texto: "Administrar apenas Aspart porque a glicemia está elevada, ignorando o restante contexto.",
+                resultado: "parcial",
+                pontos: 1,
+                feedback: "Há atenção à hiperglicemia, mas a decisão continua incompleta porque ignora a avaliação global e o enquadramento terapêutico."
+              },
+              {
+                texto: "Adiar qualquer decisão sem observar a pessoa nem rever o plano terapêutico.",
+                resultado: "errado",
+                pontos: -1,
+                feedback: "Adiar sem avaliação clínica não é a melhor abordagem e pode atrasar uma intervenção adequada."
+              }
+            ]
+          },
+          {
+            titulo: "Etapa 2: Aspeto crítico de segurança",
+            pergunta: "Qual é o aspeto de segurança mais importante nesta situação?",
+            opcoes: [
+              {
+                texto: "Prevenir administração irrefletida de insulina sem considerar contexto, prescrição e risco de eventos adversos.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. A segurança depende da adequação da administração ao estado clínico, ao tipo de insulina e ao plano instituído."
+              },
+              {
+                texto: "O único aspeto importante é o valor numérico da glicemia.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "A glicemia é relevante, mas isoladamente não basta para suportar uma decisão segura."
+              },
+              {
+                texto: "Apenas a técnica de picada subcutânea interessa neste momento.",
+                resultado: "parcial",
+                pontos: 0,
+                feedback: "A técnica é importante, mas não é o único aspeto determinante da segurança nesta fase da decisão."
+              },
+              {
+                texto: "Não existe risco relevante porque a pessoa tem hiperglicemia.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Incorreto. Mesmo perante hiperglicemia, uma decisão inadequada pode gerar risco importante."
+              }
+            ]
+          }
+        ]
+      },
 
-    function selecionarCenario(id, texto) {
-      cenarioAtual = id;
-      document.getElementById("cenarioTexto").textContent = texto;
+      jejum: {
+        titulo: "Sr. Alberto (Jejum para cateterismo)",
+        texto: "Sr. Alberto em jejum para cateterismo às 10h00. Glicemia capilar: 135 mg/dL. Deve administrar a NPH das 08h00?",
+        etapas: [
+          {
+            titulo: "Etapa 1: Interpretação inicial",
+            pergunta: "Qual é a abordagem mais segura perante a combinação de jejum e insulinoterapia?",
+            opcoes: [
+              {
+                texto: "Administrar a NPH automaticamente porque está prescrita.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Incorreto. O jejum obriga a uma análise cuidadosa do risco de hipoglicemia e da adequação ao protocolo."
+              },
+              {
+                texto: "Avaliar o risco de hipoglicemia, confirmar o protocolo institucional e articular a decisão com a prescrição em vigor.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. A decisão deve integrar jejum, tipo de insulina, contexto procedimental e segurança da pessoa."
+              },
+              {
+                texto: "Suspender sempre toda a insulina em qualquer situação de jejum.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Incorreto. Nem toda a insulina deve ser sempre suspensa; a decisão depende do tipo de insulina e do protocolo."
+              },
+              {
+                texto: "Esperar pelo procedimento sem reavaliar a glicemia nem o plano terapêutico.",
+                resultado: "errado",
+                pontos: -1,
+                feedback: "A ausência de reavaliação clínica compromete a segurança."
+              }
+            ]
+          },
+          {
+            titulo: "Etapa 2: Risco principal",
+            pergunta: "Qual é o risco clínico mais importante nesta situação?",
+            opcoes: [
+              {
+                texto: "Hipoglicemia associada à administração inadequada de insulina num contexto de jejum.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. Este é o risco central a prevenir nesta situação."
+              },
+              {
+                texto: "Apenas desconforto local da administração subcutânea.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Esse não é o principal problema clínico nesta situação."
+              },
+              {
+                texto: "Nenhum risco relevante, porque a glicemia está normal.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Incorreto. Uma glicemia momentaneamente aceitável não elimina o risco de hipoglicemia subsequente."
+              },
+              {
+                texto: "Só a hiperglicemia é preocupante em pessoas submetidas a cateterismo.",
+                resultado: "parcial",
+                pontos: 0,
+                feedback: "A hiperglicemia pode ser relevante, mas aqui o risco imediato de administração inadequada em jejum merece maior atenção."
+              }
+            ]
+          }
+        ]
+      },
+
+      baixa_visao: {
+        titulo: "D. Maria (Baixa visão)",
+        texto: "D. Maria, 70 anos, com baixa visão grave. Glicemia capilar: 310 mg/dL. Como garante que ela prepara a dose correta de insulina em segurança?",
+        etapas: [
+          {
+            titulo: "Etapa 1: Medida principal",
+            pergunta: "Qual é a medida inicial mais adequada para promover segurança na autoadministração?",
+            opcoes: [
+              {
+                texto: "Manter a preparação autónoma sem adaptações, para incentivar independência.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Incorreto. A independência não pode ser promovida à custa de risco acrescido."
+              },
+              {
+                texto: "Avaliar a capacidade funcional real e introduzir estratégias compensatórias ou apoio adequado.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. A decisão deve começar pela avaliação funcional e pela adequação dos apoios necessários."
+              },
+              {
+                texto: "Explicar oralmente uma única vez e assumir que a pessoa conseguirá reproduzir o procedimento.",
+                resultado: "errado",
+                pontos: -1,
+                feedback: "Apenas instrução verbal única é insuficiente perante baixa visão grave."
+              },
+              {
+                texto: "Pedir à pessoa que tente várias vezes até acertar a dose.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Isto introduz risco de erro de dose e não é uma estratégia segura."
+              }
+            ]
+          },
+          {
+            titulo: "Etapa 2: Estratégia de segurança",
+            pergunta: "Qual das seguintes estratégias é mais consistente com uma abordagem segura?",
+            opcoes: [
+              {
+                texto: "Treino supervisionado, adaptação do dispositivo e confirmação objetiva da capacidade para preparar a dose.",
+                resultado: "correto",
+                pontos: 3,
+                feedback: "Correto. A segurança exige treino, adaptação e verificação da competência real."
+              },
+              {
+                texto: "Confiar apenas na motivação da pessoa para ultrapassar a dificuldade visual.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "A motivação é importante, mas não substitui avaliação e estratégias concretas de segurança."
+              },
+              {
+                texto: "Evitar qualquer ensino porque a baixa visão inviabiliza sempre a autoadministração.",
+                resultado: "errado",
+                pontos: -1,
+                feedback: "É uma conclusão excessiva. Primeiro deve ser avaliada a capacidade e as adaptações possíveis."
+              },
+              {
+                texto: "Permitir a autoadministração sem supervisão inicial, para testar a autonomia.",
+                resultado: "errado",
+                pontos: -2,
+                feedback: "Isto não é seguro numa fase inicial de validação da capacidade."
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    let cenarioAtual = null;
+    let etapaAtual = 0;
+    let score = 0;
+    let escolhaBloqueada = false;
+
+    function selecionarCenario(id) {
+      cenarioAtual = cenarios[id];
+      etapaAtual = 0;
+      score = 0;
+      escolhaBloqueada = false;
+
+      document.getElementById("jogoCard").classList.remove("hidden");
+      document.getElementById("cenarioCard").classList.remove("hidden");
+      document.getElementById("perguntaCard").classList.remove("hidden");
+
+      document.getElementById("reflexaoCard").classList.add("hidden");
       document.getElementById("resultadoCard").classList.add("hidden");
       document.getElementById("erroCard").classList.add("hidden");
-      document.getElementById("estado").textContent = "Cenário selecionado com sucesso.";
+
+      document.getElementById("tituloCenario").textContent = cenarioAtual.titulo;
+      document.getElementById("cenarioTexto").textContent = cenarioAtual.texto;
+      document.getElementById("estadoCenario").textContent = "Caso em curso";
+      document.getElementById("scoreAtual").textContent = score;
+
+      renderEtapa();
     }
 
-    async function avaliarResposta() {
-      const resposta = document.getElementById("resposta").value.trim();
-      const estado = document.getElementById("estado");
+    function renderEtapa() {
+      escolhaBloqueada = false;
+      const etapa = cenarioAtual.etapas[etapaAtual];
+
+      document.getElementById("etapaAtual").textContent = `${etapaAtual + 1}/${cenarioAtual.etapas.length}`;
+      document.getElementById("perguntaTitulo").textContent = etapa.titulo;
+      document.getElementById("perguntaTexto").textContent = etapa.pergunta;
+
+      const container = document.getElementById("opcoesContainer");
+      container.innerHTML = "";
+
+      etapa.opcoes.forEach((opcao, index) => {
+        const btn = document.createElement("button");
+        btn.className = "opcao-btn";
+        btn.textContent = opcao.texto;
+        btn.onclick = () => selecionarOpcao(index, btn);
+        container.appendChild(btn);
+      });
+
+      document.getElementById("feedbackCurto").classList.add("hidden");
+      document.getElementById("feedbackCurto").textContent = "";
+
+      document.getElementById("btnProximaEtapa").classList.add("hidden");
+      document.getElementById("btnTerminar").classList.add("hidden");
+    }
+
+    function selecionarOpcao(index, botaoClicado) {
+      if (escolhaBloqueada) return;
+      escolhaBloqueada = true;
+
+      const etapa = cenarioAtual.etapas[etapaAtual];
+      const opcao = etapa.opcoes[index];
+      const todosBotoes = document.querySelectorAll(".opcao-btn");
+
+      score += opcao.pontos;
+      document.getElementById("scoreAtual").textContent = score;
+
+      todosBotoes.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === index) {
+          if (opcao.resultado === "correto") btn.classList.add("correto");
+          if (opcao.resultado === "parcial") btn.classList.add("parcial");
+          if (opcao.resultado === "errado") btn.classList.add("errado");
+        }
+      });
+
+      const feedback = document.getElementById("feedbackCurto");
+      feedback.textContent = opcao.feedback;
+      feedback.classList.remove("hidden", "feedback-correto", "feedback-parcial", "feedback-errado");
+
+      if (opcao.resultado === "correto") feedback.classList.add("feedback-correto");
+      if (opcao.resultado === "parcial") feedback.classList.add("feedback-parcial");
+      if (opcao.resultado === "errado") feedback.classList.add("feedback-errado");
+
+      if (etapaAtual < cenarioAtual.etapas.length - 1) {
+        document.getElementById("btnProximaEtapa").classList.remove("hidden");
+      } else {
+        document.getElementById("btnTerminar").classList.remove("hidden");
+      }
+    }
+
+    function proximaEtapa() {
+      etapaAtual += 1;
+      renderEtapa();
+    }
+
+    function mostrarReflexaoFinal() {
+      document.getElementById("perguntaCard").classList.add("hidden");
+      document.getElementById("reflexaoCard").classList.remove("hidden");
+      document.getElementById("estadoCenario").textContent = "A aguardar reflexão final";
+    }
+
+    async function avaliarRespostaFinal() {
+      const resposta = document.getElementById("respostaFinal").value.trim();
+      const estado = document.getElementById("estadoFinal");
       const erroCard = document.getElementById("erroCard");
       const erroMsg = document.getElementById("erroMsg");
       const resultadoCard = document.getElementById("resultadoCard");
-      const feedback = document.getElementById("feedback");
-      const score = document.getElementById("score");
+      const feedbackProfessor = document.getElementById("feedbackProfessor");
+      const scoreProfessor = document.getElementById("scoreProfessor");
 
       erroCard.classList.add("hidden");
       resultadoCard.classList.add("hidden");
 
       if (!cenarioAtual) {
-        erroMsg.textContent = "Tem de selecionar primeiro um cenário.";
+        erroMsg.textContent = "Não existe cenário selecionado.";
         erroCard.classList.remove("hidden");
         return;
       }
 
       if (!resposta) {
-        erroMsg.textContent = "Tem de escrever uma resposta antes de a avaliar.";
+        erroMsg.textContent = "Escreva uma breve justificação antes de pedir feedback.";
         erroCard.classList.remove("hidden");
         return;
       }
 
-      estado.textContent = "A avaliar a resposta...";
+      estado.textContent = "A obter feedback do professor...";
 
       try {
         const res = await fetch("/avaliar", {
@@ -195,8 +625,8 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            cenario_id: cenarioAtual,
-            resposta: resposta
+            cenario_id: obterIdCenarioAtual(),
+            resposta: `Pontuação intermédia do jogo: ${score}. Justificação do estudante: ${resposta}`
           })
         });
 
@@ -206,15 +636,23 @@
           throw new Error(data.erro || "Ocorreu um erro inesperado.");
         }
 
-        feedback.textContent = data.feedback || "";
-        score.textContent = data.score ? `Pontuação identificada: ${data.score}/10` : "";
+        feedbackProfessor.textContent = data.feedback || "";
+        scoreProfessor.textContent = `Pontuação do jogo: ${score} | Avaliação do professor: ${data.score ? data.score + "/10" : "sem pontuação extraída"}`;
         resultadoCard.classList.remove("hidden");
-        estado.textContent = "Avaliação concluída.";
+        document.getElementById("estadoCenario").textContent = "Caso concluído";
+        estado.textContent = "Feedback concluído.";
       } catch (err) {
         erroMsg.textContent = err.message;
         erroCard.classList.remove("hidden");
-        estado.textContent = "Não foi possível concluir a avaliação.";
+        estado.textContent = "Não foi possível obter feedback.";
       }
+    }
+
+    function obterIdCenarioAtual() {
+      for (const [key, value] of Object.entries(cenarios)) {
+        if (value.titulo === cenarioAtual.titulo) return key;
+      }
+      return null;
     }
   </script>
 </body>
