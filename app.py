@@ -22,7 +22,7 @@ try:
     genai.configure(api_key=api_key)
     
     # Mudamos para o 'gemini-1.5-pro' que muitas vezes resolve o erro de quota do Flash
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel("gemini-pro")
     
     if "chat" not in st.session_state:
         st.session_state.chat = model.start_chat(history=[])
